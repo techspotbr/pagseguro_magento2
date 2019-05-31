@@ -70,7 +70,12 @@ class Checkout extends \Magento\Framework\App\Action\Action
     {
         $result = $this->payment->createPaymentRequest();
         $resultPage = $this->resultPageFactory->create();
-        $code = $result->getCode();
+        if(strpos($result, 'code=')){
+            $url = explode('code=', $result);
+            $code = $url[1];
+        } else {
+            $code = $result->getCode();
+        }
         $resultPage->getLayout()->getBlock('pagseguro.payment.checkout')
             ->setCode($code);
         $resultPage->getLayout()->getBlock('pagseguro.payment.checkout')

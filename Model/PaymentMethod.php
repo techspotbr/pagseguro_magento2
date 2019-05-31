@@ -24,7 +24,7 @@ namespace UOL\PagSeguro\Model;
 
 use UOL\PagSeguro\Helper\Library;
 use PagSeguro\Domains\Requests\Payment as PS_Payment;
-
+use Magento\Store\Model\ScopeInterface;
 /**
  * Class PaymentMethod
  * @package UOL\PagSeguro\Model
@@ -245,7 +245,7 @@ class PaymentMethod
     private function getOrderStoreReference()
     {
         return \UOL\PagSeguro\Helper\Data::getOrderStoreReference(
-            $this->_scopeConfig->getValue('pagseguro/store/reference'),
+            $this->_scopeConfig->getValue('pagseguro/store/reference', ScopeInterface::SCOPE_STORES),
             $this->_checkoutSession->getLastRealOrder()->getEntityId()
         );
     }
@@ -276,7 +276,7 @@ class PaymentMethod
      */
     public function getNotificationUrl()
     {
-        return $this->_scopeConfig->getValue('payment/pagseguro/notification');
+        return $this->_scopeConfig->getValue('payment/pagseguro/notification', ScopeInterface::SCOPE_STORES);
     }
     
     /**
@@ -286,7 +286,7 @@ class PaymentMethod
      */
     public function getRedirectUrl()
     {
-        return $this->_scopeConfig->getValue('payment/pagseguro/redirect');
+        return $this->_scopeConfig->getValue('payment/pagseguro/redirect', ScopeInterface::SCOPE_STORES);
     }
     
     /**
