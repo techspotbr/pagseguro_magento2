@@ -26,6 +26,7 @@ namespace UOL\PagSeguro\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\ResourceModel\Grid;
 use UOL\PagSeguro\Model\Orders;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Observer for saving the order and his environment when a PagSeguro order is done
@@ -99,7 +100,7 @@ class CreatePagSeguroOrder implements ObserverInterface
         //verify pagseguro transaction
         if ($order->getStatus() == 'pagseguro_iniciado') {
             $orderId = $order->getId();
-            $environment = $this->_scopeConfig->getValue('payment/pagseguro/environment');
+            $environment = $this->_scopeConfig->getValue('payment/pagseguro/environment', ScopeInterface::SCOPE_STORES);
             
             //save order in pagseguro_orders table
             $this->saveOrderAndEnvironment($orderId, $environment);

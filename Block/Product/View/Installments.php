@@ -24,6 +24,7 @@
 namespace UOL\PagSeguro\Block\Product\View;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Get all the data to display an installment list in the product view
@@ -87,7 +88,7 @@ class Installments extends Template
      * @return bool
      */
     public function isEnabled() {
-        $status = $this->_scopeConfig->getValue('payment/pagseguro/installments');
+        $status = $this->_scopeConfig->getValue('payment/pagseguro/installments', ScopeInterface::SCOPE_STORES);
         return (! is_null($status) && $status == 1) ? true : false;
     }
 }

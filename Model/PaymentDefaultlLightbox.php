@@ -100,9 +100,11 @@ class PaymentDefaultlLightbox extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function isDirectCheckout()
     {
-//        if ($this->getConfigData('checkout') == \UOL\PagSeguro\Model\System\Config\Checkout::DIRECT) {
-//            return true;
-//        }
+        /*
+        if ($this->getConfigData('checkout') == \UOL\PagSeguro\Model\System\Config\Checkout::DIRECT) {
+            return true;
+        }
+        */
         return false;
     }
 
@@ -116,7 +118,8 @@ class PaymentDefaultlLightbox extends \Magento\Payment\Model\Method\AbstractMeth
         if ($this->getConfigData('checkout') == \UOL\PagSeguro\Model\System\Config\Checkout::LIGHTBOX) {
             return true;
         }
-        return false;
+        //return false;
+        return true;
     }
 
     /**

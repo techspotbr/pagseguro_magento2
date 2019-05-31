@@ -23,6 +23,8 @@
 
 namespace UOL\PagSeguro\Helper;
 
+use Magento\Store\Model\ScopeInterface;
+
 /**
  * Class Auth
  * @package UOL\PagSeguro\Helper
@@ -52,6 +54,6 @@ class Abandoned
      */
     public function isActive()
     {
-        return $this->_scopeConfig->getValue('payment/pagseguro/abandoned_active');
+        return $this->_scopeConfig->getValue('payment/pagseguro/abandoned_active', ScopeInterface::SCOPE_STORES);
     }
 }

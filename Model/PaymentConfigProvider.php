@@ -89,6 +89,6 @@ class PaymentConfigProvider implements \Magento\Checkout\Model\ConfigProviderInt
             ],
             'pagseguro_boleto' => $this->boletoMethod->getStandardCheckoutPaymentUrl(),
         ];
-        return $config;
+        return $config; 
     }
 }

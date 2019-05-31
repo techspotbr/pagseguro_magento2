@@ -23,6 +23,8 @@
 
 namespace UOL\PagSeguro\Helper;
 
+use Magento\Store\Model\ScopeInterface;
+
 /**
  * Class Auth
  * @package UOL\PagSeguro\Helper
@@ -65,7 +67,7 @@ class Auth
      */
     private function hasEmail()
     {
-        $email = $this->_scopeConfig->getValue('payment/pagseguro/email');
+        $email = $this->_scopeConfig->getValue('payment/pagseguro/email', ScopeInterface::SCOPE_STORES);
 
         // check for a e-mail
         if (!isset($email))
@@ -84,7 +86,7 @@ class Auth
      */
     private function hasToken()
     {
-        $token = $this->_scopeConfig->getValue('payment/pagseguro/token');
+        $token = $this->_scopeConfig->getValue('payment/pagseguro/token', ScopeInterface::SCOPE_STORES);
         // check for a e-mail
         if (!isset($token))
             return false;

@@ -23,6 +23,8 @@
 
 namespace UOL\PagSeguro\Helper;
 
+use Magento\Store\Model\ScopeInterface;
+
 /**
  * Class Library
  * @package UOL\PagSeguro\Helper
@@ -72,8 +74,8 @@ class Library
      */
     public function getPagSeguroCredentials()
     {
-        $email = $this->_scopeConfig->getValue('payment/pagseguro/email');
-        $token = $this->_scopeConfig->getValue('payment/pagseguro/token');
+        $email = $this->_scopeConfig->getValue('payment/pagseguro/email', ScopeInterface::SCOPE_STORES);
+        $token = $this->_scopeConfig->getValue('payment/pagseguro/token', ScopeInterface::SCOPE_STORES);
         //Set the credentials
         \PagSeguro\Configuration\Configure::setAccountCredentials($email, $token);
         return \PagSeguro\Configuration\Configure::getAccountCredentials();
@@ -83,7 +85,7 @@ class Library
      */
     public function isLightboxCheckoutType()
     {
-        if ($this->_scopeConfig->getValue('payment/pagseguro_default_lightbox/checkout')
+        if ($this->_scopeConfig->getValue('payment/pagseguro_default_lightbox/checkout' , ScopeInterface::SCOPE_STORES)
             == \UOL\PagSeguro\Model\System\Config\Checkout::LIGHTBOX) {
             return true;
         }
@@ -114,7 +116,7 @@ class Library
     public function setEnvironment()
     {
         \PagSeguro\Configuration\Configure::setEnvironment(
-            $this->_scopeConfig->getValue('payment/pagseguro/environment')
+            $this->getEnvironment()
         );
     }
     /**
@@ -122,7 +124,7 @@ class Library
      */
     public function getEnvironment()
     {
-       return $this->_scopeConfig->getValue('payment/pagseguro/environment');
+       return $this->_scopeConfig->getValue('payment/pagseguro/environment', ScopeInterface::SCOPE_STORES);
     }
 
     /**
@@ -131,7 +133,7 @@ class Library
     public function setCharset()
     {
         \PagSeguro\Configuration\Configure::setCharset(
-            $this->_scopeConfig->getValue('payment/pagseguro/charset')
+            $this->_scopeConfig->getValue('payment/pagseguro/charset', ScopeInterface::SCOPE_STORES)
         );
     }
 
@@ -140,9 +142,12 @@ class Library
      */
     public function setLog()
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $directory = $objectManager->get('\Magento\Framework\Filesystem\DirectoryList');
+
         \PagSeguro\Configuration\Configure::setLog(
-            $this->_scopeConfig->getValue('payment/pagseguro/log'),
-            $this->_scopeConfig->getValue('payment/pagseguro/log_file')
+            $this->_scopeConfig->getValue('payment/pagseguro/log', ScopeInterface::SCOPE_STORES),
+            $directory->getRoot().'/'.$this->_scopeConfig->getValue('payment/pagseguro/log_file', ScopeInterface::SCOPE_STORES)
         );
     }
 
