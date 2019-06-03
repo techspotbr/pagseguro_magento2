@@ -115,7 +115,11 @@ class NotificationMethod
         $transaction = $this->getTransaction();
 
         try{
-            $order = $this->_order->get($transaction->getReference());
+            $order = $this->_order->get(
+                $this->_helperData->getReferenceDecryptOrderID(
+                    $transaction->getReference()
+                )
+            );
         } catch (\Exception $e) {
             $this->_logger->debug(__('PagSeguro Notification Error: %1', $e->getMessage()));
             return false;
