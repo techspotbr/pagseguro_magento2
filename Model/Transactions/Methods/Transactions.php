@@ -164,7 +164,7 @@ class Transactions extends Method
                     'pagseguro_id'   => $transaction['transaction_code'],
                     'environment'    => $transaction['environment'],
                     'magento_status' => $this->formatMagentoStatus($transaction['status'], $transaction['partially_refunded']),
-                    'order_id'       => $transaction['entity_id']
+                    'order_id'       => $transaction['order_id']
                 );
             }
         }
