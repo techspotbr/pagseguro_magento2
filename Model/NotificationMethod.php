@@ -102,11 +102,14 @@ class NotificationMethod
         );
 
         if (!$this->compareStatus($status, $order->getStatus())) {
+            
+            $transactionCode = $transaction->getCode();
+
             $history = array (
                 'status' => $this->_history->setStatus($status),
-                'comment' => $this->_history->setComment('PagSeguro Notification')
+                'comment' => $this->_history->setComment(__('PagSeguro Notification: %1', $transactionCode))
             );
-            $transactionCode = $transaction->getCode();
+            
             $orderId = $order->getId();
 
             $order->setStatus($status);
