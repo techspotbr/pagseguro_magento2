@@ -94,11 +94,8 @@ class NotificationMethod
         $this->_library->setCharset();
         $this->_library->setLog();
         $transaction = $this->getTransaction();
-        $order = $this->_order->get(
-            $this->_helperData->getReferenceDecryptOrderID(
-                $transaction->getReference()
-            )
-        );
+
+        $order = $this->_order->get($transaction->getReference());
 
         $status = $this->_helperData->getStatusFromKey(
             $transaction->getStatus()
