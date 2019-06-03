@@ -51,6 +51,18 @@ class NotificationMethod
      */
     protected $_grid;
 
+    protected $_logger;
+
+    /**
+     * @var \Magento\Sales\Model\Service\InvoiceService
+     */
+    protected $_invoiceService;
+ 
+    /**
+     * @var \Magento\Framework\DB\Transaction
+     */
+    protected $_transaction;
+
     /**
      * Notification constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
@@ -61,6 +73,9 @@ class NotificationMethod
         \Magento\Sales\Api\OrderRepositoryInterface $order,
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
         \Magento\Framework\Module\ModuleList $moduleList,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Sales\Model\Service\InvoiceService $invoiceService,
+        \Magento\Framework\DB\Transaction $transaction,
         \Magento\Framework\Model\ResourceModel\Db\Context $context
     ) {
         //dependency injection
@@ -73,6 +88,9 @@ class NotificationMethod
         );
         $this->_helperData = new Data();
         $this->_grid = new Grid($context, 'pagseguro_orders', 'sales_order_grid', 'order_id');
+        $this->_logger = $logger;
+        $this->_invoiceService = $invoiceService;
+        $this->_transaction = $transaction;
     }
 
     /**
@@ -93,21 +111,28 @@ class NotificationMethod
         $this->_library->setEnvironment();
         $this->_library->setCharset();
         $this->_library->setLog();
+        
         $transaction = $this->getTransaction();
 
-        $order = $this->_order->get($transaction->getReference());
-
+        try{
+            $order = $this->_order->get($transaction->getReference());
+        } catch (\Exception $e) {
+            $this->_logger->debug(__('PagSeguro Notification Error: %1', $e->getMessage()));
+            return false;
+        }
+        
         $status = $this->_helperData->getStatusFromKey(
             $transaction->getStatus()
         );
 
         if (!$this->compareStatus($status, $order->getStatus())) {
-            
+            $this->_registerOrderInvoice($order);
+
             $transactionCode = $transaction->getCode();
 
             $history = array (
                 'status' => $this->_history->setStatus($status),
-                'comment' => $this->_history->setComment(__('PagSeguro Notification: %1', $transactionCode))
+                'comment' => $this->_history->setComment(__('PagSeguro Notification: Transaction Code = %1', $transactionCode))
             );
             
             $orderId = $order->getId();
@@ -118,8 +143,10 @@ class NotificationMethod
             
             $this->updateSalesOrderGridTransactionCode($orderId, $transactionCode);
             $this->updatePagSeguroOrdersTransactionCode($orderId, $transactionCode);
+            
         }
         return true;
+    
     }
 
     /**
@@ -189,5 +216,30 @@ class NotificationMethod
             SET transaction_code='$transactionCode'
             WHERE order_id=$orderId"
         );
+    }
+
+
+    protected function _registerOrderInvoice($order)
+    {
+        if($order->canInvoice()) {
+            $invoice = $this->_invoiceService->prepareInvoice($order);
+            $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+            $invoice->register();
+            $invoice->save();
+            $transactionSave = $this->_transaction->addObject(
+                $invoice
+            )->addObject(
+                $invoice->getOrder()
+            );
+            $transactionSave->save();
+            $order->addStatusHistoryComment(
+                __('PagSeguro Notification: Capture Online Invoice: %1', $invoice->getId())
+            )
+            ->setIsCustomerNotified(false)
+            ->save();
+
+            return true;
+        }
+        return false;
     }
 }

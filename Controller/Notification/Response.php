@@ -47,13 +47,15 @@ class Response extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $post = $this->getRequest()->getPostValue();
         try {
             $nofitication = new \UOL\PagSeguro\Model\NotificationMethod(
                 $this->_objectManager->create('\Magento\Framework\App\Config\ScopeConfigInterface'),
                 $this->_objectManager->create('\Magento\Sales\Api\OrderRepositoryInterface'),
                 $this->_objectManager->create('\Magento\Sales\Api\Data\OrderStatusHistoryInterface'),
                 $this->_objectManager->create('\Magento\Framework\Module\ModuleList'),
+                $this->_objectManager->create('\Psr\Log\LoggerInterface'),
+                $this->_objectManager->create('\Magento\Sales\Model\Service\InvoiceService'),
+                $this->_objectManager->create('\Magento\Framework\DB\Transaction'),
                 $this->_objectManager->create('\Magento\Framework\Model\ResourceModel\Db\Context')
             );
             $nofitication->init();
