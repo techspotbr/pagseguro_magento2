@@ -68,6 +68,10 @@ class PaymentConfigProvider implements \Magento\Checkout\Model\ConfigProviderInt
      */
     public function getConfig()
     {
+        if(!$this->_library->isActive()){
+            return [];
+        }
+
         $this->_library->setEnvironment();
         
         $config = [

@@ -68,6 +68,19 @@ class Library
         $this->loader();
         $this->_scopeConfig = $scopeConfigInterface;
     }
+
+     /**
+     * Check if Payment method is active
+     * @return bool
+     */
+    public function isActive()
+    {
+        $activeConfig = $this->_scopeConfig->getValue('payment/pagseguro/active', ScopeInterface::SCOPE_STORES);
+        if(isset($activeConfig) && $activeConfig){
+            return true;
+        }
+        return false;
+    }
     /**
      * Get the access credential
      * @return PagSeguroAccountCredentials
