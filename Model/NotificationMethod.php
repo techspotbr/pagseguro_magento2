@@ -130,8 +130,11 @@ class NotificationMethod
         );
 
         if (!$this->compareStatus($status, $order->getStatus())) {
-            $this->_registerOrderInvoice($order);
-
+            
+            if($status === 'pagseguro_paga'){
+                $this->_registerOrderInvoice($order);
+            }
+            
             $transactionCode = $transaction->getCode();
 
             $history = array (
